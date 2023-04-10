@@ -1,10 +1,10 @@
 from typing import Tuple
-import hashlib
+from io import StringIO, BytesIO
+from SHA3_256 import hash_message
 
 def find_mod_inverse(e: int, totient_n: int) -> int:
     u1, u2, u3 = 1, 0, e
     v1, v2, v3 = 0, 1, totient_n
-   
     while v3 != 0:
         q = u3 // v3
         v1, v2, v3, u1, u2, u3 = (u1 - q * v1), (u2 - q * v2), (u3 - q * v3), v1, v2, v3
@@ -20,177 +20,108 @@ def generate_private_key(p: int, q: int, e: int) -> Tuple[int, int]:
 
     return d, p * q
 
-def encrypt(message, key):
-    ...
+def encrypt(message, d, n): 
+    return ''.join(hex(pow(ord(m), d, n)) for m in message)
+
+    cipher = []
+
+    for m in message: 
+        cipher.append(pow(ord(m), d, n)) 
+
+    return ''.join(hex(x) for x in cipher)
+
+def decrypt(cipher, e, n):
+    cipher = [int(x, 16) for x in cipher.split('0x')[1:]]
+
+    return ''.join(chr(pow(c, e, n)) for c in cipher)
+
+    message = "" 
+    for c in cipher: 
+        message += chr(pow(c, e, n))
+
+    return message
+
+def create_signature(text, private_key):
+    d, n = private_key
+    # print(text)
+    return encrypt(hash_message(text), d, n)
 
 
+def sign_in_file(file, private_key):
+    s = StringIO(file.read())
 
+    signature = create_signature(s.getvalue(), private_key)
 
+    s.writelines(['*** Begin of digital signature ****\n', f'{signature}\n', '*** End of digital signature ****'])
+    return s
 
+def sign_separate_file(file, private_key):
+    signature = create_signature(file.read().decode('latin-1'), private_key)
 
+    s = StringIO()
+    s.writelines(['\n*** Begin of digital signature ****\n', f'{signature}\n', '*** End of digital signature ****'])
+    return s
 
+def verify_in_file(file, public_key):
+    e, n = public_key
 
-'''
-RSA (Rivest-Shamir-Adleman) Algorithm
+    lines = file.readlines()
+    try:
+        if lines[-1] == '*** End of digital signature ****' and lines[-3] == '*** Begin of digital signature ****\n':
+            signature = lines[-2][:-1]
+        else:
+            raise Exception('File doesn\'t have signature')
+    except:
+        raise Exception('File doesn\'t have signature')
 
-Encryption
-'''
+    decrypted = decrypt(signature, e, n)
 
-from typing import List
-import math
+    return hash_message(''.join(lines[:-3])[:-1]) == decrypted
 
-def baseEncrypt(m: int, d: int, n: int) -> int:
-    '''
-    Fungsi basis enkripsi RSA menggunakan kunci private (d,n)
-    '''
-    return pow(m, d, n)
+def verify_separate_file(file, signature_file, public_key):
+    e, n = public_key
+    s = file.read().decode('latin-1')
+
+    lines = signature_file.readlines()
+    try:
+        if lines[-1] == '*** End of digital signature ****' and lines[-3] == '*** Begin of digital signature ****\n':
+            signature = lines[-2][:-1]
+        else:
+            raise Exception('File doesn\'t have signature')
+    except:
+        raise Exception('File doesn\'t have signature')
     
-def convertBytetoIntArray(bytesInput: bytes, digitDiv: int) -> List[int]:
-    '''
-    Konversi Byte ke Array of Integer
-    '''
-    result = []
-    binInput = bin(int.from_bytes(bytesInput, "big"))[2:]
-
-    for index in range(0, len(binInput), digitDiv):
-        result.append(int(binInput[index : index + digitDiv], 2))
-    result.append(len(binInput) % digitDiv)
-
-    return result
-    
-def convertIntArraytoByte(inputList: List[int], digit: int) -> bytes:
-    '''
-    Konversi Array of Integer menjadi Byte
-    '''
-    binary = ''.join([bin(val)[2:].zfill(digit) for val in inputList]) 
-    
-    intResult = int(binary, 2)
-    result = intResult.to_bytes((len(binary) + 7) // 8, "big")
-
-    return result
-
-def digitDivider(n: int) -> int:
-    '''
-    Menentukan panjang digit/bit untuk membagi binary file
-    '''
-    return math.floor(math.log2(n))
-
-def maxBitLength(n: int) -> int:
-    '''
-    Menentukan panjang bit maksimal untuk menyimpan enkripsi [0...n-1]
-    '''
-    return (n-1).bit_length()
-
-def encryptBytes(message: bytes, d: int, n: int) -> bytes:
-    '''
-    Operasi enkripsi file berdasarkan kunci publik (e,n)
-    File disimpan dalam direktori /files/
-    '''
-    plainBytes = message
-    
-    digitDiv = digitDivider(n)
-    intValue = convertBytetoIntArray(plainBytes, digitDiv)
-    cipherInt = [baseEncrypt(val, d, n) for val in intValue]
-    cipherBytes = convertIntArraytoByte(cipherInt, maxBitLength(n))
-
-    return cipherBytes
+    return decrypt(signature, e, n) == hash_message(s)
 
 
-'''
-RSA (Rivest-Shamir-Adleman) Algorithm
 
-Decryption
-'''
 
-from typing import List
-import math
+# def encrypt(pk,plaintext):
+#     # Unpack the key into it's components
+#     key, n = pk
+#     # Convert each letter in the plaintext to numbers based on the character using a^b mod m
+#     cipher = [pow(ord(char), key, n) for char in plaintext]
+#     # Return the array of bytes
+#     return cipher
 
-def baseDecrypt(c: int, e: int, n: int) -> int:
-    '''
-    Fungsi basis dekripsi RSA menggunakan kunci privat (d,n)
-    '''
-    try:
-        return pow(c, e, n)
-    except Exception as E:
-        raise(E)
 
-def binaryPadding(bits: str, n: int) -> str :
-    '''
-    Menambahkah padding '0' sebanyak n bit.
-    '''
-    try:
-        while len(bits) % n != 0:
-            bits = '0'+bits
-        return bits
-    except Exception as E:
-        raise(E)
-    
-def convertBytetoIntArray(bytesInput: bytes, digitDiv: int) -> List[int]:
-    '''
-    Konversi Byte ke Array of Integer
-    '''
-    try:
-        result = []
-        binInput = bin(int.from_bytes(bytesInput, "big"))[2:]
-        binInput = binaryPadding(binInput, digitDiv)
+# def decrypt(pk, ciphertext):
+#     # Unpack the key into its components
+#     key, n = pk
+#     # Generate the plaintext based on the ciphertext and key using a^b mod m
+#     aux = [str(pow(char, key, n)) for char in ciphertext]
+#     # Return the array of bytes as a string
+#     plain = [chr(int(char2)) for char2 in aux]
+#     return ''.join(plain)
 
-        for index in range(0, len(binInput), digitDiv):
-            result.append(int(binInput[index : index + digitDiv], 2))
+# if __name__ == '__main__':
+#     message = "hello reza"
+#     n = 3337
+#     e = 79
+#     d = 1019
 
-        return result
-    except Exception as E:
-        raise(E)
+#     cipher = encrypt(message, d, n)
+#     text = decrypt(cipher, e, n)
 
-def convertIntArraytoByte(inputList: List[int], digit: int) -> bytes:
-    '''
-    Konversi Array of Integer menjadi Byte
-    '''
-    try:
-        binary = ''
-        for i, val in enumerate(inputList):
-            if i != len(inputList)-2 :
-                binary+=bin(val)[2:].zfill(digit)
-            else:
-                binary+=bin(val)[2:].zfill(inputList[-1])
-                break
-
-        intResult = int(binary, 2)
-        result = intResult.to_bytes((len(binary) + 7) // 8, "big", signed=False)
-
-        return result
-    except Exception as E:
-        raise(Exception("kunci tidak cocok!"))
-
-def digitDivider(n: int) -> int:
-    '''
-    Menentukan panjang digit/bit awal
-    '''
-    try:
-        return math.floor(math.log2(n))
-    except Exception as E:
-        raise(E)
-
-def maxBitLength(n: int) -> int:
-    '''
-    Menentukan panjang bit maksimal membagi enkripsi binary [0...n-1]
-    '''
-    try:
-        return (n-1).bit_length()
-    except Exception as E:
-        raise(E)
-
-def decryptBytes(message: bytes, e: int, n: int):
-    '''
-    Operasi dekripsi file berdasarkan kunci publik (d,n)
-    File disimpan dalam direktori /files/
-    '''
-    try:
-        cipherBytes = message
-        digitDiv = digitDivider(n)
-        intValue = convertBytetoIntArray(cipherBytes, maxBitLength(n))
-        plainInt = [baseDecrypt(val, e, n) for val in intValue]
-        plainBytes = convertIntArraytoByte(plainInt, digitDiv)
-
-        return plainBytes
-    except Exception as E:
-        raise(E)
+#     print(cipher)
+#     print(text)
