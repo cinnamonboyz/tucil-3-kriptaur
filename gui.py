@@ -13,7 +13,7 @@ window.title("Tugas Kecil 3 - Program Tanda-tangan Digital")
 
 # key gen window
 key_gen_window = Frame(window)
-key_gen_window.grid(row=0, column=0, padx=10, pady=10)
+key_gen_window.grid(row=0, column=0, padx=10, pady=20)
 
 
 # parameter section
@@ -56,7 +56,7 @@ random_button.grid(row=3, column=0, columnspan=2, ipadx=20, padx=10)
 
 # save key section
 save_key_sect = LabelFrame(key_gen_window, text='Save key')
-save_key_sect.grid(row=0, column=1, ipadx=30, ipady=40, padx=10)
+save_key_sect.grid(row=0, column=1, ipadx=30, ipady=52, padx=10)
 
 key_name_label = Label(save_key_sect, text='Enter the key name')
 key_name_label.grid(row=0, column=0, pady=5)
@@ -91,7 +91,7 @@ def save_key():
 
     success_window = Toplevel(window)
     success_window.title('Success')
-    label = Label(success_window, text='Creating key success!') 
+    label = Label(success_window, text='Key generated successfully!') 
     label.pack(padx=30, pady=50)
 
 save_key_button = Button(save_key_sect, text='Generate & save key', command=save_key)
