@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, IO
 from io import StringIO, BytesIO
 from SHA3_256 import hash_message
 
@@ -20,7 +20,7 @@ def generate_private_key(p: int, q: int, e: int) -> Tuple[int, int]:
 
     return d, p * q
 
-def encrypt(message, d, n): 
+def encrypt(message: str, d: int, n: int) -> str: 
     return ''.join(hex(pow(ord(m), d, n)) for m in message)
 
     cipher = []
@@ -30,7 +30,7 @@ def encrypt(message, d, n):
 
     return ''.join(hex(x) for x in cipher)
 
-def decrypt(cipher, e, n):
+def decrypt(cipher: str, e: int, n: int) -> str:
     cipher = [int(x, 16) for x in cipher.split('0x')[1:]]
 
     return ''.join(chr(pow(c, e, n)) for c in cipher)
@@ -41,13 +41,13 @@ def decrypt(cipher, e, n):
 
     return message
 
-def create_signature(text, private_key):
+def create_signature(text: str, private_key: Tuple[int, int]) -> str:
     d, n = private_key
     # print(text)
     return encrypt(hash_message(text), d, n)
 
 
-def sign_in_file(file, private_key):
+def sign_in_file(file: IO, private_key: Tuple[int, int]) -> StringIO:
     s = StringIO(file.read())
 
     signature = create_signature(s.getvalue(), private_key)
@@ -55,14 +55,14 @@ def sign_in_file(file, private_key):
     s.writelines(['*** Begin of digital signature ****\n', f'{signature}\n', '*** End of digital signature ****'])
     return s
 
-def sign_separate_file(file, private_key):
+def sign_separate_file(file: IO, private_key: Tuple[int, int]) -> StringIO:
     signature = create_signature(file.read().decode('latin-1'), private_key)
 
     s = StringIO()
     s.writelines(['\n*** Begin of digital signature ****\n', f'{signature}\n', '*** End of digital signature ****'])
     return s
 
-def verify_in_file(file, public_key):
+def verify_in_file(file: IO, public_key: Tuple[int, int]) -> bool:
     e, n = public_key
 
     lines = file.readlines()
@@ -78,7 +78,7 @@ def verify_in_file(file, public_key):
 
     return hash_message(''.join(lines[:-3])[:-1]) == decrypted
 
-def verify_separate_file(file, signature_file, public_key):
+def verify_separate_file(file: IO, signature_file: IO, public_key: Tuple[int, int]) -> bool:
     e, n = public_key
     s = file.read().decode('latin-1')
 

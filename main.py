@@ -37,4 +37,3 @@ if __name__ == '__main__':
         with open('foto.jpg_signed.txt', 'r') as signature_file:
             verified = verify_separate_file(plain_file, signature_file, public_key)
             print(verified)
-    
