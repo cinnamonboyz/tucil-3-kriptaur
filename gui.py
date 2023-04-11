@@ -1,7 +1,11 @@
-# from key_generator import get_random_key
 from tkinter import *
 from tkinter.ttk import *
-from tkinter.filedialog import askopenfile 
+
+from key_generator import get_random_key
+from RSA import generate_private_key, generate_public_key
+from util import is_prime, is_relative_prime, write_key_file
+
+# from tkinter.filedialog import askopenfile 
 
 
 window = Tk()
@@ -40,7 +44,13 @@ def randomize_params():
     p_entry.delete(0, END)
     p_entry.insert(0, p)
 
-random_button = Button(parameter_sect, text='Randomize parameters')
+    q_entry.delete(0, END)
+    q_entry.insert(0, q)
+
+    e_entry.delete(0, END)
+    e_entry.insert(0, e)
+
+random_button = Button(parameter_sect, text='Randomize parameters', command=randomize_params)
 random_button.grid(row=3, column=0, columnspan=2, ipadx=20, padx=10)
 
 
@@ -54,7 +64,37 @@ key_name_label.grid(row=0, column=0, pady=5)
 key_name_entry = Entry(save_key_sect)
 key_name_entry.grid(row=1, column=0, pady=10, padx=15)
 
-save_key_button = Button(save_key_sect, text='Generate & save key')
+def save_key():
+    p = int(p_entry.get())
+    q = int(q_entry.get())
+    e = int(e_entry.get())
+
+    if not is_prime(p) or not is_prime(q):
+        warn_window = Toplevel(window)
+        warn_window.title('Error')
+        label = Label(warn_window, text='p or q must be a prime number!') 
+        label.pack(padx=30, pady=50)
+        return
+
+    if not is_relative_prime((p - 1)*(q - 1), e):
+        warn_window = Toplevel(window)
+        warn_window.title('Error')
+        label = Label(warn_window, text='Totien n and e must be relative prime!') 
+        label.pack(padx=30, pady=50)
+        return
+
+    public_key = generate_public_key(p, q, e)
+    private_key = generate_private_key(p, q, e)
+
+    write_key_file(public_key, f'./keys/{key_name_entry.get()}.pub')
+    write_key_file(private_key, f'./keys/{key_name_entry.get()}.pri')
+
+    success_window = Toplevel(window)
+    success_window.title('Success')
+    label = Label(success_window, text='Creating key success!') 
+    label.pack(padx=30, pady=50)
+
+save_key_button = Button(save_key_sect, text='Generate & save key', command=save_key)
 save_key_button.grid(row=2, column=0, pady=5, ipadx=15)
 
 window.mainloop()
