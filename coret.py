@@ -3,18 +3,14 @@ from tkinter.filedialog import askopenfile
 
 window = Tk()
 window.geometry("400x400")
-window.title("Tugas Kecil 3 - Program Tanda-tangan Digital")
+window.title("Open File Dialog Example")
 
-key_gen_window = Frame(window)
-key_gen_window.pack(side='top', pady=20)
+def open_file_dialog():
+    file = askopenfile(mode="")
+    if file is not None:
+        print(file.name)
 
-parameter_sect = LabelFrame(key_gen_window, text='Parameter')
-parameter_sect.place(relx=0.5, rely=0.5, anchor='center')
-
-p_label = Label(parameter_sect, text='P: ')
-p_label.grid(row=0, column=0)
-
-p_entry = Entry(parameter_sect)
-p_entry.grid(row=0, column=1)
+open_button = Button(window, text="Open File", command=open_file_dialog)
+open_button.pack(pady=20)
 
 window.mainloop()
