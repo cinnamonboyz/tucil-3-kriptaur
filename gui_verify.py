@@ -12,6 +12,21 @@ def open_file_dialog():
     if file is not None:
         print(file.name)
 
+def open_pri_dialog():
+    file = filedialog.askopenfile(mode="r", filetypes=[("PRI Files", "*.pri")])
+    if file is not None:
+        print(file.name)
+
+def open_pub_dialog():
+    file = filedialog.askopenfile(mode="r", filetypes=[("PUB Files", "*.pub")])
+    if file is not None:
+        print(file.name)
+
+def open_signature_dialog():
+    file = filedialog.askopenfile(mode="r", filetypes=[("Signature Files", "*.txt")])
+    if file is not None:
+        print(file.name)
+
 # Digital Signing Window
 verify_window = Frame(window)
 verify_window.grid(row=0, column=0, padx=10, pady=20)
@@ -33,7 +48,7 @@ select_pri_sect.grid(row=1, column=0, ipadx=30, ipady=40, padx=10)
 select_pri_sect_label = Label(select_pri_sect, text='No file selected')
 select_pri_sect_label.grid(row=0, column=0, pady=5)
 
-select_pri_button = Button(select_pri_sect, text='Select file', command=open_file_dialog)
+select_pri_button = Button(select_pri_sect, text='Select file', command=open_pub_dialog)
 select_pri_button.grid(row=3, column=0, columnspan=2, ipadx=20, padx=10)
 
 # Signature Type section
@@ -52,11 +67,11 @@ select_signature_sect.grid(row=1, column=1, ipadx=30, ipady=40, padx=10)
 select_signature_sect_label = Label(select_signature_sect, text='No signature selected')
 select_signature_sect_label.grid(row=0, column=0, pady=5)
 
-select_pri_button = Button(select_signature_sect, text='Select file', command=open_file_dialog)
+select_pri_button = Button(select_signature_sect, text='Select file', command=open_signature_dialog)
 select_pri_button.grid(row=3, column=0, columnspan=2, ipadx=20, padx=10)
 
 # Verify button
 verify_button = Button(verify_window, text='Verify')
-verify_button.grid(row=2, column=1, columnspan=2, ipadx=20, padx=10)
+verify_button.grid(row=2, column=0, columnspan=2, ipadx=20, padx=10)
 
 window.mainloop()

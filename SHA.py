@@ -152,3 +152,5 @@ def sponge(P,n):
 def hash_message(m):
     P,n = pre_processing(m)
     return bits_to_hex(sponge(P,n))
+
+print(hash_message("Fik"))

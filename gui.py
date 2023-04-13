@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter.ttk import *
+from tkinter import messagebox
 
 from key_generator import get_random_key
 from RSA import generate_private_key, generate_public_key
@@ -70,10 +71,12 @@ def save_key():
     e = int(e_entry.get())
 
     if not is_prime(p) or not is_prime(q):
-        warn_window = Toplevel(window)
-        warn_window.title('Error')
-        label = Label(warn_window, text='p or q must be a prime number!') 
-        label.pack(padx=30, pady=50)
+        messagebox.showerror("showerror", "p or q must be a prime number!")
+
+        # warn_window = Toplevel(window)
+        # warn_window.title('Error')
+        # label = Label(warn_window, text='p or q must be a prime number!') 
+        # label.pack(padx=30, pady=50)
         return
 
     if not is_relative_prime((p - 1)*(q - 1), e):
