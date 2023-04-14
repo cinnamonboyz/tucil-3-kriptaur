@@ -73,7 +73,7 @@ def digital_sign():
                 messagebox.showerror('Error', 'Please use seperate signature for non-.txt files')
                 return
             
-            buf = sign_file(plain_file, private_key)
+            buf = sign_in_file(plain_file, private_key)
             save_path = f'./signed_files/signed_{p.stem + p.suffix}'
             os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
