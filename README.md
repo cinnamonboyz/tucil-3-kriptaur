@@ -11,9 +11,7 @@ Untuk aplikasi desktop, tanda tangan dapat disimpan di dalam dokumen terpisah at
 - Pengguna dapat memilih apakah tanda-tangan disimpan di dalam dokumen terpisah (separate) atau disatukan di dalam file pesan.
 - Tanda tangan digital bergantung pada isi file dan kunci.
 - Tanda-tangan digital direpresentasikan sebagai karakter-karakter heksadesimal. Untuk membedakan tandatangan digital dengan isi dokumen, maka tanda-tangan digital diawali dan diakhiri dengan
-*** Begin of digital signature ****
-<digital signature>
-*** End of digital signature ****
+*** Begin of digital signature **** dan *** End of digital signature ****
 - Karena algoritma RSA menggunakan parameter bilangan bulat yang panjang (besar), maka program anda harus mampu menggunakan bilangan yang besar.
 
 # 👨‍💻Specifications
