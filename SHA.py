@@ -1,7 +1,5 @@
+# mencoba membuat SHA3. Program berjalan untuk input kecil tetapi IndexError: list index out of range untuk input besar
 import hashlib
-
-# def hash_message(message: str) -> str:
-#     return hashlib.sha3_256(message.encode()).hexdigest()
 
 b = 1600
 r = 1088
@@ -153,4 +151,4 @@ def hash_message(m):
     P,n = pre_processing(m)
     return bits_to_hex(sponge(P,n))
 
-print(hash_message("Fik"))
+print(hash_message("Kriptografi"))
