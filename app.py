@@ -104,7 +104,7 @@ info_label_1 = Label(window, text='by')
 info_label_1.grid(row=2, column=0)
 info_label_2 = Label(window, text='Fikri Muhammad Fahreza')
 info_label_2.grid(row=3, column=0)
-info_label_3 = Label(window, text='ALLLLLLLLLL')
+info_label_3 = Label(window, text='Aldi Fadlian Sunan')
 info_label_3.grid(row=4, column=0)
 
 key_gen_button = Button(navbar, text='Generate Key', width=20, command=gen_key)
