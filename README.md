@@ -26,7 +26,7 @@ Untuk file non teks seperti .jpg, .pdf, video, maupun audio, tanda-tangan digita
 
 # 💻How to Run This Program?
 1. Clone repositori ini
-2. Buka file main.py
+2. Run file app.py
 3. Buat kunci terlebih dahulu melalui menu generate key
 4. Signing signature ke dokumen melalui menu sign dengan kunci yang telah dibuat sebelumnya
 5. Verifying signature dari dokumen yang telah ditandatangani melalui menu Verify
