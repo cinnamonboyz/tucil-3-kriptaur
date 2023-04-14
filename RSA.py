@@ -43,20 +43,22 @@ def decrypt(cipher: str, e: int, n: int) -> str:
 
 def create_signature(text: str, private_key: Tuple[int, int]) -> str:
     d, n = private_key
-    # print(text)
+
     return encrypt(hash_message(text), d, n)
 
 
 def sign_in_file(file: IO, private_key: Tuple[int, int]) -> StringIO:
-    s = StringIO(file.read())
+    s = BytesIO(file.read())
+    
+    signature = create_signature(s.getvalue().decode(), private_key)
+    s.seek(0, 2)
 
-    signature = create_signature(s.getvalue(), private_key)
+    s.writelines([b'\n*** Begin of digital signature ****\n', f'{signature}\n'.encode(), b'*** End of digital signature ****'])
 
-    s.writelines(['*** Begin of digital signature ****\n', f'{signature}\n', '*** End of digital signature ****'])
     return s
 
 def sign_separate_file(file: IO, private_key: Tuple[int, int]) -> StringIO:
-    signature = create_signature(file.read().decode('latin-1'), private_key)
+    signature = create_signature(file.read().decode('latin1'), private_key)
 
     s = StringIO()
     s.writelines(['\n*** Begin of digital signature ****\n', f'{signature}\n', '*** End of digital signature ****'])
@@ -66,23 +68,30 @@ def verify_in_file(file: IO, public_key: Tuple[int, int]) -> bool:
     e, n = public_key
 
     lines = file.readlines()
+    file.seek(0)
     try:
-        if lines[-1] == '*** End of digital signature ****' and lines[-3] == '*** Begin of digital signature ****\n':
+        if lines[-1] == b'*** End of digital signature ****' and lines[-3] == b'*** Begin of digital signature ****\n':
+            print(lines)
             signature = lines[-2][:-1]
         else:
             raise Exception('File doesn\'t have signature')
     except:
         raise Exception('File doesn\'t have signature')
 
-    decrypted = decrypt(signature, e, n)
+    decrypted = decrypt(signature.decode('latin-1'), e, n)
 
-    return hash_message(''.join(lines[:-3])[:-1]) == decrypted
+    content = file.read().decode('latin-1')
+
+    return hash_message('\n'.join(content.split('\n')[:-3])) == decrypted
 
 def verify_separate_file(file: IO, signature_file: IO, public_key: Tuple[int, int]) -> bool:
     e, n = public_key
     s = file.read().decode('latin-1')
 
+    file.seek(0)
+
     lines = signature_file.readlines()
+    signature_file.seek(0)
     try:
         if lines[-1] == '*** End of digital signature ****' and lines[-3] == '*** Begin of digital signature ****\n':
             signature = lines[-2][:-1]

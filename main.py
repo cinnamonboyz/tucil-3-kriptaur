@@ -19,21 +19,21 @@ if __name__ == '__main__':
     write_key_file(public_key, 'my_public_key.pub')
 
 
-    # with open('test_file.txt', 'r') as plain_file:
-    #     buf = sign_in_file(plain_file, private_key)
-    #     with open('test_file_signed.txt', 'w') as signed_file:
-    #         signed_file.write(buf.getvalue())
+    with open('test_file.txt', 'r') as plain_file:
+        buf = sign_in_file(plain_file, private_key)
+        with open('test_file_signed.txt', 'w') as signed_file:
+            signed_file.write(buf.getvalue())
 
-    # with open('test_file_signed.txt', 'r') as signed_file:
-    #     verified = verify_in_file(signed_file, public_key)
-    #     print(verified)
+    with open('test_file_signed.txt', 'r') as signed_file:
+        verified = verify_in_file(signed_file, public_key)
+        print(verified)
 
-    with open('foto.jpg', 'rb') as plain_file:
-        with open('foto.jpg_signed.txt', 'w') as signature_file:
-            buf = sign_separate_file(plain_file, private_key)
-            signature_file.write(buf.getvalue())
+    # with open('foto.jpg', 'rb') as plain_file:
+    #     with open('foto.jpg_signed.txt', 'w') as signature_file:
+    #         buf = sign_separate_file(plain_file, private_key)
+    #         signature_file.write(buf.getvalue())
 
-    with open('foto.jpg', 'rb') as plain_file:
-        with open('foto.jpg_signed.txt', 'r') as signature_file:
-            verified = verify_separate_file(plain_file, signature_file, public_key)
-            print(verified)
+    # with open('foto.jpg', 'rb') as plain_file:
+    #     with open('foto.jpg_signed.txt', 'r') as signature_file:
+    #         verified = verify_separate_file(plain_file, signature_file, public_key)
+    #         print(verified)
