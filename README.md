@@ -18,11 +18,11 @@ Untuk aplikasi desktop, tanda tangan dapat disimpan di dalam dokumen terpisah at
 1. Program berupa aplikasi desktop yang terdiri dari menu:
 a) Menu pembangkitan kunci publik dan kunci privat RSA.
 b) Menu pembangkitan tanda-tangan digital (signing)
-c) Menu verifikasi tanda-tangan digital (verivying)
-- Program RSA dibuat sendiri, tidak menggunakan libary bahasa pemrograman. Panjang kunci sebaiknya di atas 512 bit (gunakan pustaka big number)
-2. File dokumen yang ditanda-tangani default-nya adalah file teks, tanda-tangan digital disisipkan pada akhir dokumen.
+c) Menu verifikasi tanda-tangan digital (verifying)
+2. Program RSA dibuat sendiri, tidak menggunakan libary bahasa pemrograman. Panjang kunci sebaiknya di atas 512 bit (gunakan pustaka big number)
+3. File dokumen yang ditanda-tangani default-nya adalah file teks, tanda-tangan digital disisipkan pada akhir dokumen.
 Untuk file non teks seperti .jpg, .pdf, video, maupun audio, tanda-tangan digital disimpan di dalam file terpisah.
-3. Bahasa pemrograman yang digunakan adalah Python
+4. Bahasa pemrograman yang digunakan adalah Python
 
 # 💻How to Run This Program?
 1. Clone repositori ini
